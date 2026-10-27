@@ -1,0 +1,6 @@
+.git
+.github
+.claude
+*.json
+!go.sum
+tests

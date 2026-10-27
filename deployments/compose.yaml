@@ -1,0 +1,48 @@
+# Local development stack. Datastores are bound to localhost only.
+#   docker compose -f deployments/compose.yaml up --build
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"] # cache only; nothing to persist
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: live
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-live-dev-only}
+      POSTGRES_DB: live
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U live -d live"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+    environment:
+      HTTP_ADDR: ":8080"
+      REDIS_ADDR: redis:6379
+      DATABASE_URL: postgres://live:${POSTGRES_PASSWORD:-live-dev-only}@postgres:5432/live?sslmode=disable
+      INGEST_ENABLED: "true" # single-process mode: enables WebSocket fan-out
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
