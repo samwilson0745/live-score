@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS sync_state;
+DROP TABLE IF EXISTS match_provider_refs;
+DROP TABLE IF EXISTS matches;
+DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS competitions;
+DROP TABLE IF EXISTS sports;
