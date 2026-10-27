@@ -2,7 +2,7 @@
 #   docker compose -f deployments/compose.yaml up --build
 services:
   redis:
-    image: redis:7.4-alpine
+    image: redis:8.0-alpine
     command: ["redis-server", "--save", "", "--appendonly", "no"] # cache only; nothing to persist
     ports:
       - "127.0.0.1:6379:6379"
