@@ -1,0 +1,6 @@
+/bin/
+.env
+*.test
+*.out
+live-score-response.json
+.claude/settings.local.json
